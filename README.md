@@ -9,6 +9,18 @@ A Claude Code plugin that shows what's happening: context usage, rate limits, ac
 
 > 🌐 English | [中文文档](README.zh.md)
 
+## Other CLIs (Cursor, Codex, anything that writes JSONL)
+
+Cursor has no status line command, so run the HUD in a split pane beside it:
+
+```bash
+node adapters/session.mjs --cli cursor --watch
+node adapters/session.mjs --cli codex --watch
+node adapters/session.mjs --file path/to/session.jsonl --watch   # any JSONL with OpenAI- or Anthropic-style usage
+```
+
+`~` marks estimates. Cursor's transcripts have no token counts and omit tool results, so its context is a lower bound (characters / 4), with no system split, throughput, or cache rate. In Claude Code, turn the same line on with `display.showContextHistory`.
+
 ## Install
 
 Inside Claude Code, run:

@@ -5,7 +5,7 @@ import { activityLine } from './activity.ts';
 import { separatorLine, visibleWidth } from './ansi.ts';
 import { contextLine } from './context.ts';
 import type { LabelAlign } from './labels.ts';
-import { addedDirsLine, cacheHitRateLine, environmentLine, memoryLine, promptCacheLine, sessionTimeLine } from './lines.ts';
+import { addedDirsLine, cacheHitRateLine, contextHistoryLine, environmentLine, memoryLine, promptCacheLine, sessionTimeLine } from './lines.ts';
 import { orderParts } from './order.ts';
 import {
   advisorPart, authPart, compactionsPart, costPart, customLinePart, durationPart, extraPart, modelBadge,
@@ -52,6 +52,7 @@ function elementLine(f: Frame, element: HudElement, align: LabelAlign = {}): str
     case 'usage': return usageParts(f, 'expanded', align)?.join(' | ') ?? null;
     case 'promptCache': return promptCacheLine(f);
     case 'cacheHitRate': return cacheHitRateLine(f);
+    case 'contextHistory': return contextHistoryLine(f);
     case 'memory': return memoryLine(f, align);
     case 'environment': return environmentLine(f);
     case 'sessionTime': return sessionTimeLine(f);

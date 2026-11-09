@@ -9,6 +9,7 @@
     "collector.mjs",
     "fence.mjs",
     "install.mjs",
+    "adapters/session.mjs",
     "dist/index.js",
     "src/",
     "skills/",

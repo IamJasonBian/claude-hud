@@ -3,7 +3,10 @@ import { t } from '../i18n/index.ts';
 import { displayLabel } from '../utils/sanitize.ts';
 import type { Frame } from './frame.ts';
 import { critical, dim, getContextColor, getQuotaColor, label, quotaBar, RESET, warning } from './colors.ts';
-import { outputStyle } from './derive.ts';
+import { effort, outputStyle } from './derive.ts';
+import { formatEffort } from '../effort.ts';
+import { getTotalTokens } from '../stdin.ts';
+import { formatTokens } from '../utils/format.ts';
 import { barLabel, type LabelAlign } from './labels.ts';
 import { addedDirs, configCountParts } from './parts.ts';
 import { formatAbsoluteTime, formatAgo, wallClock } from './time.ts';
@@ -59,6 +62,50 @@ export function cacheHitRateLine(f: Frame): string | null {
   const ratio = f.stdin.prompt_cache?.hit_ratio;
   if (f.config?.display?.showCacheHitRate !== true || typeof ratio !== 'number' || !Number.isFinite(ratio)) return null;
   return `${label(t('label.cacheHitRate'), f.config?.colors)} ${Math.min(100, Math.max(0, ratio * 100)).toFixed(1)}%`;
+}
+
+const SPARK = '▁▂▃▄▅▆▇█';
+const SPARK_WIDTH = 12;
+const isCount = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value) && value >= 0;
+
+function sparkline(values: number[]): string {
+  const shown = values.slice(-SPARK_WIDTH);
+  const max = Math.max(...shown, 1);
+  return shown.map((value) => SPARK[Math.min(SPARK.length - 1, Math.floor((value / max) * SPARK.length))]).join('');
+}
+
+function cacheRatio(f: Frame): number | null {
+  const ratio = f.stdin.prompt_cache?.hit_ratio;
+  if (typeof ratio === 'number' && Number.isFinite(ratio)) return ratio;
+  const tokens = f.transcript.sessionTokens;
+  const total = tokens ? tokens.inputTokens + tokens.cacheCreationTokens + tokens.cacheReadTokens : 0;
+  return tokens && total > 0 ? tokens.cacheReadTokens / total : null;
+}
+
+/** `sys 31k · local 142k ▂▃▅▇ │ ◑ high │ 52.1 tok/s │ cache 96%`; `~` marks estimates. */
+export function contextHistoryLine(f: Frame): string | null {
+  const adapter = f.stdin.hud_context;
+  if (!f.config?.display?.showContextHistory && !adapter) return null;
+
+  const history = (adapter?.history ?? f.transcript.contextHistory ?? []).filter(isCount);
+  const current = getTotalTokens(f.stdin) || f.transcript.contextTokens || history.at(-1) || 0;
+  if (current === 0) return null;
+
+  const mark = adapter?.estimated ? '~' : '';
+  const system = adapter ? adapter.system_tokens : f.transcript.systemTokens;
+  const split = isCount(system)
+    ? `sys ${mark}${formatTokens(system)} · local ${mark}${formatTokens(Math.max(0, current - system))}`
+    : `local ${mark}${formatTokens(current)}`;
+  const info = effort(f);
+  const speed = adapter ? adapter.tok_per_sec : f.outputSpeed;
+  const ratio = cacheRatio(f);
+  const parts = [
+    history.length > 1 ? `${split} ${sparkline(history)}` : split,
+    info ? formatEffort(info, f.config?.display?.effortFormat) : null,
+    isCount(speed) ? `${mark}${speed.toFixed(1)} ${t('format.tokPerSec')}` : null,
+    ratio !== null ? `${t('format.cache')} ${Math.round(Math.min(1, Math.max(0, ratio)) * 100)}%` : null,
+  ].filter(Boolean);
+  return label(parts.join(' │ '), f.config?.colors);
 }
 
 const pad = (n: number): string => String(n).padStart(2, '0');

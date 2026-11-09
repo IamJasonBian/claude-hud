@@ -29,7 +29,7 @@ function needsTranscript(config: HudConfig, stdin: StdinData): boolean {
   const d = config.display;
   return d.showTools || d.showSkills || d.showMcp || d.showAgents || d.showTodos
     || d.showConfigCounts || d.showSessionTokens || d.showCompactions || d.showAdvisor
-    || d.showSessionStartDate || d.showLastResponseAt || d.showEffortLevel
+    || d.showSessionStartDate || d.showLastResponseAt || d.showEffortLevel || d.showContextHistory
     || d.modelSource !== "stdin"
     || isContextUnreported(stdin);
 }
@@ -94,7 +94,7 @@ export async function renderStdin(stdin: StdinData, config: HudConfig, { ask, fi
       ? getCostTotals(stdin, { allowRoutedCost: display.showRoutedCost, sevenDayResetAt: usageData?.sevenDayResetAt ?? null },
         { dataDir: () => dataDir, now: () => now })
       : null,
-    outputSpeed: display.showSpeed ? getOutputSpeed(stdin, dataDir) : null,
+    outputSpeed: display.showSpeed || display.showContextHistory ? getOutputSpeed(stdin, dataDir) : null,
     gitStatus,
     usageData,
     memoryUsage: "memory" in answers ? getMemoryUsage(readMemory(answers.memory as MemoryFacts)) : null,

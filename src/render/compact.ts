@@ -4,7 +4,7 @@ import type { Frame } from './frame.ts';
 import { activityLine, type ActivityElement } from './activity.ts';
 import { separatorLine, visibleWidth } from './ansi.ts';
 import { contextBarAndValue, tokenBreakdown } from './context.ts';
-import { cacheHitRateLine, promptCacheLine, sessionTimeLine } from './lines.ts';
+import { cacheHitRateLine, contextHistoryLine, promptCacheLine, sessionTimeLine } from './lines.ts';
 import { orderParts } from './order.ts';
 import {
   advisorPart, authPart, compactionsPart, configCountParts, costPart, customLinePart, durationPart, extraPart,
@@ -40,6 +40,7 @@ function sessionLine(f: Frame): string {
   add(sessionTimeLine(f));
   add(promptCacheLine(f));
   add(cacheHitRateLine(f));
+  add(contextHistoryLine(f));
   add(costPart(f), 'cost');
   add(speedPart(f), 'speed');
   add(extraPart(f), 'extra');

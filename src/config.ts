@@ -35,6 +35,7 @@ const ELEMENTS = [
   'usage',
   'promptCache',
   'cacheHitRate',
+  'contextHistory',
   'memory',
   'environment',
   'tools',
@@ -172,6 +173,7 @@ export interface HudConfig {
     showMemoryUsage: boolean;
     showPromptCache: boolean;
     showCacheHitRate: boolean;
+    showContextHistory: boolean;
     showSessionTokens: boolean;
     showOutputStyle: boolean;
     showSessionStartDate: boolean;
@@ -273,6 +275,7 @@ export const DEFAULT_CONFIG: HudConfig = {
     showMemoryUsage: false,
     showPromptCache: false,
     showCacheHitRate: false,
+    showContextHistory: false,
     showSessionTokens: false,
     showOutputStyle: false,
     showSessionStartDate: false,

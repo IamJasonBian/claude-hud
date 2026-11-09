@@ -92,6 +92,7 @@ export const DESCRIPTIONS: Record<string, string> = {
   "display.showMemoryUsage": "Show an approximate system RAM usage line in expanded layout",
   "display.showPromptCache": "Show when the main conversation's prompt cache expires",
   "display.showCacheHitRate": "Show the session's prompt-cache hit rate as `Cache hit X%`",
+  "display.showContextHistory": "Show context split into system and local with per-request history, plus effort, throughput, and cache hit rate",
   "display.customLine": "Custom text shown on the first line (80 characters max)",
   "display.customLinePosition": "Put the custom text at the start or the end of the first line",
   "colors.context": "Base color for the context bar and context percentage",

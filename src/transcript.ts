@@ -228,6 +228,11 @@ class Parser {
     const contextTokens = usage.inputTokens + usage.cacheCreationTokens + usage.cacheReadTokens;
     if (entry.isSidechain !== true && contextTokens > 0) {
       this.data.contextTokens = contextTokens;
+      this.data.systemTokens ??= contextTokens;
+      const history = (this.data.contextHistory ??= []);
+      // One response is logged several times with the same size.
+      if (history.at(-1) !== contextTokens) history.push(contextTokens);
+      if (history.length > 64) history.shift();
     }
 
     const id = entry.message?.id;

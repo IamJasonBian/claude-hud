@@ -55,6 +55,13 @@ export interface StdinData {
     hit_ratio?: number | null;
   } | null;
   effort?: { level?: string } | null;
+  // Set by adapters/session.mjs for CLIs that have no status line payload of their own.
+  hud_context?: {
+    system_tokens?: number | null;
+    history?: number[];
+    tok_per_sec?: number | null;
+    estimated?: boolean;
+  } | null;
   worktree?: { name?: string; path?: string; branch?: string } | null;
 }
 
@@ -170,6 +177,10 @@ export interface TranscriptData {
   // Tokens in the main conversation's context as of its last request, or the
   // post-compaction size after a compact boundary.
   contextTokens?: number;
+  // The first main-conversation request's context: system prompt, tools, memory, first message.
+  systemTokens?: number;
+  // Main-conversation context size per request, oldest first and capped.
+  contextHistory?: number[];
   // Advisor model ID for the current session, captured from the top-level
   // `advisorModel` field that Claude Code stamps onto every assistant record
   // after `/advisor` is set (e.g. "claude-opus-4-7"). undefined when /advisor
